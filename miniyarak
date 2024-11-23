@@ -1,0 +1,52 @@
+-- Ride a Cart Simulator Pet Duplication Script
+-- Author: YourName
+-- Description: This script duplicates a player's pets stored in a PetsFolder.
+
+-- Roblox Services
+local Players = game:GetService("Players")
+
+-- Function to duplicate pets
+local function duplicatePets(player)
+    -- Check for the PetsFolder
+    local petsFolder = player:FindFirstChild("PetsFolder")
+    if not petsFolder then
+        warn("No PetsFolder found for " .. player.Name)
+        return
+    end
+
+    -- Duplicate each pet in the folder
+    for _, pet in ipairs(petsFolder:GetChildren()) do
+        local duplicatePet = pet:Clone()
+        duplicatePet.Parent = petsFolder
+    end
+
+    print("Pets duplicated for " .. player.Name)
+end
+
+-- Player join event
+Players.PlayerAdded:Connect(function(player)
+    -- Ensure the PetsFolder exists
+    local petsFolder = player:FindFirstChild("PetsFolder") or Instance.new("Folder")
+    petsFolder.Name = "PetsFolder"
+    petsFolder.Parent = player
+
+    -- Optional: Add a test pet for players with no pets
+    if #petsFolder:GetChildren() == 0 then
+        local testPet = Instance.new("Part")
+        testPet.Name = "TestPet"
+        testPet.Parent = petsFolder
+    end
+
+    -- GUI for duplicating pets
+    local playerGui = player:WaitForChild("PlayerGui")
+    local screenGui = Instance.new("ScreenGui", playerGui)
+    local duplicateButton = Instance.new("TextButton", screenGui)
+
+    duplicateButton.Size = UDim2.new(0, 200, 0, 50)
+    duplicateButton.Position = UDim2.new(0.5, -100, 0.9, -25)
+    duplicateButton.Text = "Duplicate Pets"
+
+    duplicateButton.MouseButton1Click:Connect(function()
+        duplicatePets(player)
+    end)
+end)
